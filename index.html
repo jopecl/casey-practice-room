@@ -339,7 +339,10 @@ table.ex th{color:#2a1d5c}
 .aiform input:focus,.aiform select:focus{border-color:var(--violet);outline:none}
 .aiform .small{font-size:12px;color:#646a74;margin:0}
 .aiform .btns{justify-content:flex-start}
-#ai-status{min-height:18px;font-weight:600;color:#4b2fd0}
+#ai-status{min-height:18px;font-weight:600;color:var(--bad)}
+.aiform textarea{font:12.5px/1.45 ui-monospace,Menlo,monospace;padding:10px 12px;border-radius:10px;border:1.5px solid #e2dcf3;background:#faf8ff;color:var(--ink);resize:vertical;font-weight:400}
+.aiform .row2{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:12px}
+.modal .steps{margin:0;padding-left:20px;text-align:left;font-size:13px;display:flex;flex-direction:column;gap:4px;color:#555a63}
 </style>
 
 <!--
@@ -5305,11 +5308,9 @@ const fmtTs = (ms) => { const d = new Date(ms || Date.now()); let h = d.getHours
 const ACKS = ['Thanks', 'Great!', 'Thank you', 'Noted, thank you'];
 
 /* ---------------- Custom cases: create with AI / upload JSON ----------------
-   Custom cases live only in this browser (localStorage). The Anthropic API key, if used,
-   is stored only in this browser and sent only to api.anthropic.com. */
+   Custom cases live only in this browser (localStorage). No AI API is called: the user copies a
+   prompt into their own AI chat and pastes the answer back. */
 const CKEY = 'casey-custom-cases-v1';
-const KKEY = 'casey-anthropic-key';
-const MKEY = 'casey-ai-model';
 const BUILTIN_IDS = new Set(CASES.map(c => c.id));
 function loadCustom(){ const arr = store.get(CKEY, []); return Array.isArray(arr) ? arr.filter(c => { try { validateCase(c); return true; } catch(e) { return false; } }) : []; }
 function saveCustom(){ store.set(CKEY, CASES.filter(c => c.custom)); }
@@ -5366,6 +5367,7 @@ function addCustomCases(list){
   saveCustom(); return added;
 }
 CASES.push(...loadCustom());
+store.del('casey-anthropic-key'); store.del('casey-ai-model');
 
 function downloadJSON(name, obj){
   const a = document.createElement('a');
@@ -5392,46 +5394,57 @@ function uploadCases(){
 
 const AI_PROBLEMS = ['Any', 'Profitability', 'Market entry', 'Pricing', 'Growth strategy', 'M&A / valuation', 'Cost reduction', 'New product launch', 'Make vs buy / operations', 'Investment decision'];
 function aiDialog(){
-  const key = store.get(KKEY, '');
-  const model = store.get(MKEY, 'claude-opus-5-5');
-  const used = CASES.map(c => c.industry).join('; ');
-  const m = modal('<h2>Create a case with AI</h2>' +
-    '<p>Claude writes a new, original case in the same format, with hard multiple-choice questions and worked solutions. It takes about 2–4 minutes.</p>' +
+  const m = modal('<h2>Create a case with your AI</h2>' +
+    '<ol class="steps"><li><b>Choose</b> the kind of case and copy the prompt.</li><li><b>Paste</b> it into ChatGPT, Claude, Gemini or any AI chat.</li><li><b>Copy the whole answer</b> and paste it below. The page turns it into a playable case.</li></ol>' +
     '<form class="aiform" id="ai-form">' +
-    '<label>Problem type<select id="ai-problem">' + AI_PROBLEMS.map(p => '<option>' + esc(p) + '</option>').join('') + '</select></label>' +
-    '<label>Industry or twist (optional)<input id="ai-topic" placeholder="e.g. Spanish supermarket chain, a relocation that does not pay off"></label>' +
-    '<label>Model<select id="ai-model"><option value="claude-opus-5-5">Claude Opus 5.5 (best)</option><option value="claude-sonnet-5-5">Claude Sonnet 5.5 (faster, cheaper)</option></select></label>' +
-    '<label>Anthropic API key<input id="ai-key" type="password" autocomplete="off" placeholder="sk-ant-…" value="' + esc(key) + '"></label>' +
-    '<p class="small">The key is saved only in this browser and is sent only to api.anthropic.com. Each case costs roughly €0.30–1 on Opus, less on Sonnet. Get a key at console.anthropic.com.</p>' +
-    '<div class="btns"><button class="pillbtn" type="submit" id="ai-go">Create case</button><button class="pillbtn ghost" type="button" data-close>Cancel</button></div>' +
+    '<div class="row2"><label>Problem type<select id="ai-problem">' + AI_PROBLEMS.map(p => '<option>' + esc(p) + '</option>').join('') + '</select></label>' +
+    '<label>Industry or twist (optional)<input id="ai-topic" placeholder="e.g. Spanish supermarkets; a relocation that does not pay off"></label></div>' +
+    '<label>1 · Prompt to copy<textarea id="ai-prompt" readonly rows="5"></textarea></label>' +
+    '<div class="btns"><button class="pillbtn blue" type="button" id="ai-copy">Copy prompt</button></div>' +
+    '<label>2 · Paste your AI\'s answer here<textarea id="ai-answer" rows="7" placeholder="Paste the full answer. Extra text or ```json fences around it are fine."></textarea></label>' +
+    '<div class="btns"><button class="pillbtn" type="submit">Add case</button><button class="pillbtn ghost" type="button" data-close>Cancel</button></div>' +
     '<div id="ai-status" class="small" aria-live="polite"></div></form>', {wide: true});
-  $('ai-model').value = model;
-  let ctrl = null;
-  m.root.querySelector('[data-close]').addEventListener('click', () => ctrl && ctrl.abort());
-  $('ai-form').onsubmit = async (ev) => {
+  const fill = () => { $('ai-prompt').value = buildCasePrompt($('ai-problem').value, $('ai-topic').value.trim()); };
+  $('ai-problem').onchange = fill; $('ai-topic').oninput = fill; fill();
+  $('ai-copy').onclick = async () => {
+    const t = $('ai-prompt').value;
+    try { await navigator.clipboard.writeText(t); } catch (e) { $('ai-prompt').select(); try { document.execCommand('copy'); } catch (e2) {} }
+    $('ai-copy').textContent = 'Copied ✓'; setTimeout(() => { if ($('ai-copy')) $('ai-copy').textContent = 'Copy prompt'; }, 1800);
+  };
+  $('ai-form').onsubmit = (ev) => {
     ev.preventDefault();
-    const k = $('ai-key').value.trim();
-    if (!k) { $('ai-status').textContent = 'Paste your API key first.'; return; }
-    store.set(KKEY, k); store.set(MKEY, $('ai-model').value);
-    $('ai-go').disabled = true; ctrl = new AbortController();
-    const st = (t) => { $('ai-status').textContent = t; };
     try {
-      const c = await generateCase({key: k, model: $('ai-model').value, problem: $('ai-problem').value, topic: $('ai-topic').value.trim(), avoid: used, signal: ctrl.signal, onProgress: st});
-      const [added] = addCustomCases([c]);
-      m.close(); renderHome(); toast('New case added: ' + added.title);
-    } catch (e) {
-      if (e.name === 'AbortError') return;
-      st('Error: ' + e.message); $('ai-go').disabled = false;
-    }
+      const list = parseCaseText($('ai-answer').value);
+      const added = addCustomCases(list);
+      m.close(); renderHome(); toast(added.length === 1 ? 'New case added: ' + added[0].title : added.length + ' cases added');
+    } catch (e) { $('ai-status').textContent = e.message; }
   };
 }
-
-function aiSystemPrompt(){
+function parseCaseText(raw){
+  let t = String(raw || '').trim();
+  if (!t) throw new Error('Paste the answer from your AI first.');
+  const fence = t.match(/```(?:json)?\s*([\s\S]*?)```/i); if (fence && fence[1].includes('{')) t = fence[1];
+  t = t.replace(/[“”]/g, '"').replace(/[‘’]/g, "'");
+  const a = t.indexOf('{'), b = t.lastIndexOf('}');
+  if (a < 0 || b < a) throw new Error('No case found in the text. Make sure you copied the whole answer, including the part in curly brackets { }.');
+  let body = t.slice(a, b + 1), data;
+  try { data = JSON.parse(body); }
+  catch (e) {
+    try { data = JSON.parse(body.replace(/,\s*([}\]])/g, '$1')); }
+    catch (e2) { throw new Error('The answer looks cut off or is not valid JSON. Ask your AI to "send the complete JSON again in one code block" and paste that.'); }
+  }
+  const list = Array.isArray(data) ? data : Array.isArray(data.cases) ? data.cases : [data];
+  list.forEach(validateCase);
+  return list;
+}
+function buildCasePrompt(problem, topic){
   const ex = JSON.parse(JSON.stringify(caseById('velora') || CASES[0]));
   ex.questions.forEach(q => { delete q.legacy; delete q.rev; });
   return [
     'You write practice cases for an online, chatbot-style consulting case assessment (one case, 35 minutes, 8–10 questions, then a 1-minute video answer). The candidate cannot go back, uses a calculator, and sees exhibits only when the interviewer shows them.',
-    'Return ONLY one JSON object (no prose, no code fences) that follows exactly the schema of the example case below. Field meanings:',
+    'TASK: write ONE new case.' + (problem && problem !== 'Any' ? ' Problem type: ' + problem + '.' : '') + (topic ? ' Industry or twist requested: ' + topic + '.' : '') + ' Make it as hard as the real test.',
+    '',
+    'OUTPUT: reply with ONE JSON object inside a single ```json code block and nothing else. It must follow exactly the schema of the example case at the end. If your reply would be cut off, keep the texts shorter rather than leaving the JSON incomplete. Field meanings:',
     '- id: short slug; title: company name; company; industry; problem; region; summary (1–2 sentences for the menu card).',
     '- timeLimitMin: 35. intro: 2–3 interviewer messages that set up the client, the numbers that matter and the question to answer.',
     '- exhibits: object of exhibits keyed by short ids (e.g. "R1"). kind "table": title, columns[], rows[][] (strings), note. kind "bar": title, unit, categories[], series[{name, values[] (numbers)}], decimals, note.',
@@ -5451,67 +5464,11 @@ function aiSystemPrompt(){
     '5. Judgement questions ("best next step", "most important assumption") must have four plausible options; the right one follows from a number in the case (e.g. the assumption with the largest sensitivity).',
     '6. Spread the correct letters of single-choice questions across A–D.',
     '',
-    'CORRECTNESS: every number must be internally consistent. Before writing the JSON, work every calculation and every multi-select statement out carefully, then make sure each "answer", "correct" and "solution" matches. Use original, fictional companies (no real firms) and an industry different from these existing cases: ' + CASES.map(c => c.industry).join('; ') + '. Write in English.',
+    'CORRECTNESS: every number must be internally consistent. Before writing the JSON, privately work every calculation and every multi-select statement out carefully, then make sure each "answer", "correct" and "solution" matches. Use original, fictional companies (no real firms) and an industry different from these existing cases: ' + CASES.map(c => c.industry).join('; ') + '. Write in English.',
     '',
     'Example case (format reference only; do not reuse its content):',
     JSON.stringify(ex)
   ].join('\n');
-}
-
-async function generateCase({key, model, problem, topic, avoid, signal, onProgress}){
-  const ask = 'Write a new case.' + (problem && problem !== 'Any' ? ' Problem type: ' + problem + '.' : '') + (topic ? ' Industry or twist requested: ' + topic + '.' : '') + ' Make it as hard as the real test.';
-  onProgress('Connecting to Claude…');
-  const res = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST', signal,
-    headers: {
-      'content-type': 'application/json',
-      'x-api-key': key,
-      'anthropic-version': '2026-10-21',
-      'anthropic-beta': 'server-side-fallback-2026-07-01',
-      'anthropic-dangerous-direct-browser-access': 'true'
-    },
-    body: JSON.stringify({
-      model, max_tokens: 64000, stream: true,
-      thinking: {type: 'adaptive'},
-      output_config: {effort: 'high'},
-      fallbacks: 'default',
-      system: aiSystemPrompt(),
-      messages: [{role: 'user', content: ask}]
-    })
-  });
-  if (!res.ok) {
-    let msg = 'HTTP ' + res.status; try { const j = await res.json(); msg = (j.error && j.error.message) || msg; } catch(e){}
-    if (res.status === 401) msg = 'The API key was rejected. Check it at console.anthropic.com.';
-    throw new Error(msg);
-  }
-  const reader = res.body.getReader(); const dec = new TextDecoder();
-  let buf = '', text = '', stop = null, thinking = false, t0 = Date.now();
-  const tickMsg = () => onProgress((text ? 'Writing the case… ' + Math.round(text.length / 1000) + 'k characters' : thinking ? 'Claude is designing the case and checking the numbers…' : 'Working…') + ' (' + Math.round((Date.now() - t0) / 1000) + ' s)');
-  const timer = setInterval(tickMsg, 1000);
-  try {
-    for (;;) {
-      const {value, done} = await reader.read(); if (done) break;
-      buf += dec.decode(value, {stream: true});
-      let i;
-      while ((i = buf.indexOf('\n\n')) >= 0) {
-        const chunk = buf.slice(0, i); buf = buf.slice(i + 2);
-        const line = chunk.split('\n').find(l => l.startsWith('data:')); if (!line) continue;
-        let ev; try { ev = JSON.parse(line.slice(5)); } catch(e) { continue; }
-        if (ev.type === 'content_block_start' && ev.content_block && ev.content_block.type === 'thinking') thinking = true;
-        if (ev.type === 'content_block_delta' && ev.delta && ev.delta.type === 'text_delta') text += ev.delta.text;
-        if (ev.type === 'message_delta' && ev.delta) stop = ev.delta.stop_reason || stop;
-        if (ev.type === 'error') throw new Error((ev.error && ev.error.message) || 'The API returned an error.');
-      }
-    }
-  } finally { clearInterval(timer); }
-  if (stop === 'refusal') throw new Error('Claude declined this request. Try a different topic.');
-  if (stop === 'max_tokens') throw new Error('The case came out too long and was cut off. Try again.');
-  onProgress('Checking the case…');
-  const a = text.indexOf('{'), b = text.lastIndexOf('}');
-  if (a < 0 || b < a) throw new Error('No case came back. Try again.');
-  let c; try { c = JSON.parse(text.slice(a, b + 1)); } catch(e) { throw new Error('The case was not valid JSON. Try again.'); }
-  validateCase(c);
-  return c;
 }
 
 function deleteCustom(id){
@@ -5627,7 +5584,7 @@ function renderHome(){
   let html = '<header class="hero"><span class="eyebrow">Online case practice · chatbot format</span><h1>Casey Practice Room</h1>' +
     '<p class="muted" style="margin:0">Timed mock cases laid out like the real online case: one case, a single 35-minute clock for everything, no going back, and a one-minute video answer inside that clock. Every question has a worked solution at the end.</p>' +
     '<div class="facts"><span class="fact num">35:00 whole-test timer (video included)</span><span class="fact">8–10 questions + video</span><span class="fact">No going back · blank = 0</span><span class="fact">Use your own calculator</span></div></header>';
-  html += '<div class="toolbar"><button class="pillbtn" id="ai-new">✨ Create a case with AI</button><button class="pillbtn ghost" id="up-case">Upload case (.json)</button>' + (CASES.some(c => c.custom) ? '<button class="pillbtn ghost" id="dl-custom">Download my cases</button>' : '') + '</div>';
+  html += '<div class="toolbar"><button class="pillbtn" id="ai-new">✨ Create a case with your AI</button><button class="pillbtn ghost" id="up-case">Upload case (.json)</button>' + (CASES.some(c => c.custom) ? '<button class="pillbtn ghost" id="dl-custom">Download my cases</button>' : '') + '</div>';
   if (active && caseById(active.caseId)) {
     html += '<div class="note-card"><b>Attempt in progress: ' + esc(caseById(active.caseId).title) + '</b><span class="muted">As in the real test, the timer kept running while you were away.</span><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="pillbtn blue" id="resume">Resume</button><button class="pillbtn ghost" id="discard">Discard attempt</button></div></div>';
   }
