@@ -315,6 +315,17 @@ table.ex th{color:#2a1d5c}
 .checklist input{accent-color:var(--violet)}
 .modal{border-radius:18px}
 .illus{background:#f1edff}
+
+/* question bubbles */
+.qdots{flex:none;display:flex;align-items:center;gap:0;padding:2px 30px 12px 44px;overflow-x:auto;scrollbar-width:none}
+.qdots::-webkit-scrollbar{display:none}
+.qdot{flex:none;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font-size:12px;font-weight:800;background:#fff;color:#8b84a8;border:2px solid #ddd6f0;font-variant-numeric:tabular-nums;transition:background .3s,border-color .3s}
+.qdot.done{background:var(--mint);border-color:var(--mint);color:#fff;box-shadow:0 2px 8px rgba(20,184,125,.35)}
+.qdot.cur{border-color:var(--violet);color:var(--violet);box-shadow:0 0 0 4px rgba(109,74,255,.15)}
+.qline{flex:1 1 14px;min-width:8px;max-width:40px;height:3px;background:#ddd6f0;border-radius:2px}
+.qline.done{background:var(--mint)}
+#video .qdots{padding-left:30px}
+@media (max-width:860px){.qdots{padding:0 12px 8px}.qdot{width:24px;height:24px;font-size:11px}}
 </style>
 
 <!--
@@ -499,11 +510,11 @@ table.ex th{color:#2a1d5c}
      "options": [
       {
        "id": "A",
-       "text": "Forecast of Portuguese e-commerce sales to 2030"
+       "text": "Accounts-receivable days by customer segment, 2023 vs 2025"
       },
       {
        "id": "B",
-       "text": "Fixed costs by plant, 2023 vs 2025"
+       "text": "Capacity additions announced by Iberian competitors for 2027"
       },
       {
        "id": "C",
@@ -511,41 +522,32 @@ table.ex th{color:#2a1d5c}
       },
       {
        "id": "D",
-       "text": "Volume and price per tonne by customer segment, 2023 vs 2025"
+       "text": "Capex plan for 2026–2028"
       },
       {
        "id": "E",
-       "text": "Share prices of listed packaging competitors"
+       "text": "Fixed costs by plant, 2023 vs 2025"
       },
       {
        "id": "F",
-       "text": "Staff turnover by plant"
+       "text": "Solano's market share in each segment, 2023 vs 2025"
       },
       {
        "id": "G",
-       "text": "Consumer brand awareness of Solano in Portugal"
+       "text": "Volume and net price per tonne by customer segment, 2023 vs 2025"
       },
       {
        "id": "H",
-       "text": "Net Promoter Score by customer segment"
+       "text": "Year-end paper inventory, 2023 vs 2025"
       }
      ],
      "correct": [
-      "B",
       "C",
-      "D"
+      "E",
+      "G"
      ],
-     "solution": "Profit = (price − variable cost) × volume − fixed costs. The first data request should cover every term of that equation: price and volume by segment (D), variable cost by component (C) and fixed costs (B). NPS, staff turnover and market forecasts may matter later but cannot explain a past profit gap. Brand awareness among consumers is irrelevant for a B2B supplier, and competitor share prices say nothing about Solano's costs.",
-     "legacy": {
-      "F": "A",
-      "C": "B",
-      "B": "C",
-      "A": "D",
-      "H": "E",
-      "G": "F",
-      "E": "G",
-      "D": "H"
-     }
+     "solution": "Profit = (price − variable cost) × volume − fixed costs, so the first request must cover each term for the period in which profit fell: volume and net price by segment (G), variable cost per tonne (C) and fixed costs (E). Receivable days and paper inventory affect cash, not operating profit. Competitors' 2027 capacity and Solano's capex plan look forward, but the question is about a past decline. Market share tells you why volume moved, but you already get volume directly, and share does not explain why profit fell while revenue grew.",
+     "rev": 3
     },
     {
      "id": "q2",
@@ -611,27 +613,28 @@ table.ex th{color:#2a1d5c}
        "exhibit": "S3"
       }
      ],
-     "prompt": "Which statement is best supported by Exhibits S1–S3?",
+     "prompt": "Operating profit fell by €8.3M between 2023 and 2025. Which statement best explains the fall?",
      "options": [
       {
        "id": "A",
-       "text": "Profit fell mainly because Solano lost volume."
+       "text": "Growth came from the lowest-contribution segment, and that mix shift on its own reduced profit."
       },
       {
        "id": "B",
-       "text": "Growth came from the lowest-contribution segment, while higher variable costs squeezed contribution in every segment."
+       "text": "Net price changes across the three segments cost about €7.6M and are the main driver."
       },
       {
        "id": "C",
-       "text": "Price cuts in food & beverage drove most of the decline."
+       "text": "Had variable costs per tonne stayed at 2023 levels, profit would still have fallen."
       },
       {
        "id": "D",
-       "text": "Higher fixed costs explain most of the decline."
+       "text": "Higher variable cost per tonne cost about €9M, more than the whole decline, while volume growth partly offset it."
       }
      ],
-     "correct": "B",
-     "solution": "Volume rose 180 → 200 kt (A false). F&B price rose (C false). Fixed costs rose only €1M of an €8.3M drop (D false). E-commerce has the lowest contribution in both years (€300 → €175/t) and was the only growing segment; the variable cost per tonne rose €45, which hits every segment. B."
+     "correct": "D",
+     "solution": "Split the €7.3M fall in contribution plus €1.0M of extra fixed cost. Variable cost rose €45/t × 200 kt = −€9.0M. Net price effect at 2025 volume = −€3.05M (−7.60 + 3.50 + 1.05), so €7.6M is e-commerce only (B is wrong). Volume and mix at 2023 unit contributions: 95×300 + 70×400 + 35×350 = €68.75M vs €64.0M, so +€4.75M: the move into e-commerce still added profit (A is wrong). Without the cost increase, profit would have been 5.7 + 9.0 = €14.7M, above 2023's €14.0M (C is wrong).",
+     "rev": 3
     },
     {
      "id": "q6",
@@ -887,54 +890,45 @@ table.ex th{color:#2a1d5c}
      "options": [
       {
        "id": "A",
-       "text": "Petrol price history in Sweden"
+       "text": "Trend in Spanish household electricity tariffs"
       },
       {
        "id": "B",
-       "text": "Existing charging networks: locations, market shares and prices"
+       "text": "Highway charging demand: EV fleet, highway kilometres and share charged at fast chargers"
       },
       {
        "id": "C",
-       "text": "Expected EV fleet and highway charging demand in Spain"
+       "text": "Return on capital of Lumen's Norwegian network"
       },
       {
        "id": "D",
-       "text": "Site economics: capex, electricity and grid costs, expected utilisation"
+       "text": "Permitting and grid-connection lead times for highway sites in Spain"
       },
       {
        "id": "E",
-       "text": "Customer satisfaction of Lumen's Norwegian users"
+       "text": "Competitors' locations, share of charged energy and price per kWh"
       },
       {
        "id": "F",
-       "text": "Spanish household electricity tariffs"
+       "text": "Spanish subsidies for home wallboxes"
       },
       {
        "id": "G",
-       "text": "Downloads of Lumen's app in Norway"
+       "text": "Per-site economics: capex, electricity and grid fees, utilisation"
       },
       {
        "id": "H",
-       "text": "Permitting and grid-connection lead times in Spain"
+       "text": "Number of new EV models to be launched in Spain next year"
       }
      ],
      "correct": [
       "B",
-      "C",
       "D",
-      "H"
+      "E",
+      "G"
      ],
-     "solution": "A market-entry decision needs market attractiveness (C), competition (B), our own economics (D) and feasibility/barriers to entry (H). Norwegian satisfaction and app downloads describe the home market, not Spain. Household tariffs don't apply to a commercial operator buying at grid scale. Swedish petrol prices are irrelevant.",
-     "legacy": {
-      "G": "A",
-      "B": "B",
-      "A": "C",
-      "C": "D",
-      "E": "E",
-      "F": "F",
-      "H": "G",
-      "D": "H"
-     }
+     "solution": "To decide on entry you need the market (B), the competition and price level (E), the unit economics of a site (G) and the practical barrier to building sites (D). Household tariffs are not Lumen's cost: fast chargers pay commercial energy and grid fees. Norwegian returns do not transfer to a different market. Wallbox subsidies and new model launches are already reflected in the fleet and highway-charging share inside B.",
+     "rev": 3
     },
     {
      "id": "q2",
@@ -1094,23 +1088,24 @@ table.ex th{color:#2a1d5c}
      "options": [
       {
        "id": "A",
-       "text": "Enter with all 60 sites as planned to build scale quickly."
+       "text": "Enter with the 40 highest-traffic sites, apply for the capex grant, and add sites as utilisation is proven."
       },
       {
        "id": "B",
-       "text": "Do not enter Spain; the market is too small."
+       "text": "Enter with all 60 sites, because the high-share scenario makes the network profitable."
       },
       {
        "id": "C",
-       "text": "Enter with the 40 highest-traffic sites, apply for the capex grant, and add sites as the EV fleet grows."
+       "text": "Delay entry until 2030, when the EV fleet is larger, to avoid early losses."
       },
       {
        "id": "D",
-       "text": "Acquire Network A to buy 35% share immediately."
+       "text": "Enter with 60 sites but price at €0.49/kWh to match Network C and win share faster."
       }
      ],
-     "correct": "C",
-     "solution": "The 60-site plan loses €1.89M a year in expectation (A ✗). The market is growing and two independent levers each turn profit positive, so walking away is premature (B ✗). We have no data on Network A's price or profitability (D ✗). C combines the two levers that work (+€0.71M and +€0.81M on their own) and keeps the option to expand."
+     "correct": "A",
+     "solution": "The 60-site plan loses money in expectation (−€1.89M); the high-share scenario has only a 20% probability. Fewer sites capturing the same energy, or a capex grant, each makes the expected profit positive, so this option fixes the economics while keeping the option to grow. Cutting the price removes €0.06/kWh of a €0.30 margin, so it needs much more share. Waiting gives the best highway sites and grid connections to competitors.",
+     "rev": 3
     },
     {
      "id": "q8",
@@ -1245,58 +1240,48 @@ table.ex th{color:#2a1d5c}
      "type": "multi",
      "expectedMin": 3,
      "weight": 1.5,
-     "prompt": "To judge whether the proposed tiers will grow revenue, which information should we gather? Select all that apply.",
+     "prompt": "To estimate how the proposed tiers would change monthly recurring revenue (MRR) from today's customers, which information do you need? Select all that apply.",
      "options": [
       {
        "id": "A",
-       "text": "Competitors' prices for restaurant inventory software"
+       "text": "Gross margin per location by segment"
       },
       {
        "id": "B",
-       "text": "Engineering backlog of feature requests ranked by effort"
+       "text": "Number of locations by segment"
       },
       {
        "id": "C",
-       "text": "Pantrio's office rent in Berlin"
+       "text": "Acquisition cost per new location by segment"
       },
       {
        "id": "D",
-       "text": "Number of restaurant openings in Germany, 2005–2010"
+       "text": "Which tier each segment would choose, and the share that would cancel"
       },
       {
        "id": "E",
-       "text": "Current customers and revenue by segment"
+       "text": "Competitors' published price lists"
       },
       {
        "id": "F",
-       "text": "Churn and acquisition cost by segment"
+       "text": "Price each location pays today, including discounts"
       },
       {
        "id": "G",
-       "text": "Which tier each segment is likely to choose, and how many would cancel"
+       "text": "Sales-team commission plan"
       },
       {
        "id": "H",
-       "text": "Hardware cost of the kitchen tablets restaurants use"
+       "text": "Server cost per location"
       }
      ],
      "correct": [
-      "A",
-      "E",
-      "F",
-      "G"
+      "B",
+      "D",
+      "F"
      ],
-     "solution": "A pricing change is judged on today's revenue base (E), how customers will migrate or leave (G), the long-term value of each customer (F) and the alternatives customers can switch to (A). Tablet hardware is a restaurant cost Pantrio doesn't sell; office rent is unaffected by pricing; 15-year-old openings data and an engineering backlog don't tell us how customers react to price.",
-     "legacy": {
-      "D": "A",
-      "H": "B",
-      "F": "C",
-      "G": "D",
-      "A": "E",
-      "C": "F",
-      "B": "G",
-      "E": "H"
-     }
+     "solution": "MRR from today's base = locations × price, before and after. You need locations by segment (B), what they pay today (F) and how each segment would split across tiers or cancel (D). Gross margin, server cost and acquisition cost matter for profit and LTV, not for this MRR change. Competitors' prices explain why customers pick a tier, but the survey response in D already captures their effect.",
+     "rev": 3
     },
     {
      "id": "q2",
@@ -1454,23 +1439,24 @@ table.ex th{color:#2a1d5c}
      "options": [
       {
        "id": "A",
-       "text": "Roll out €135 to all customers at once to capture the revenue quickly."
+       "text": "Roll out €135 to all independents and small groups now; the CFO's estimate already includes the cancellations."
       },
       {
        "id": "B",
-       "text": "Test €135 on new sign-ups in one region for 2–3 months, tracking conversion and early churn, before changing existing customers."
+       "text": "Test €135 on new sign-ups in one region first, then extend it to existing customers."
       },
       {
        "id": "C",
-       "text": "Launch the tiered model to chains first."
+       "text": "Launch the tiered model to chains first, since chains do not cancel."
       },
       {
        "id": "D",
-       "text": "Run another survey asking customers whether they would accept a higher price."
+       "text": "Pilot €135 with a random sample of existing independents and small groups for 2–3 months, against a control group, tracking cancellations."
       }
      ],
-     "correct": "B",
-     "solution": "The +€39k depends on survey-based cancellation rates, which are the main risk. A live test on new sign-ups measures real behaviour without risking the existing base (A ✗). Chains are unaffected by the CFO plan and the tiers lose money (C ✗). Another survey has the same stated-vs-actual bias (D ✗)."
+     "correct": "D",
+     "solution": "The key uncertainty in the CFO's proposal is how many existing customers cancel (6% and 2% are assumptions). Only a pilot on existing customers with a control group measures that. New sign-ups (B) tell you about conversion, not cancellations of the current base. Tiers lower chain revenue (Enterprise €110 < €120), so C loses money. A reads the estimate as a fact.",
+     "rev": 3
     },
     {
      "id": "q9",
@@ -1583,53 +1569,50 @@ table.ex th{color:#2a1d5c}
      "type": "multi",
      "expectedMin": 3,
      "weight": 1.5,
-     "prompt": "Which areas should we analyse to find where Dentalia's profit growth can come from? Select all that apply.",
+     "prompt": "Dentalia must add €6M of annual operating profit within three years. Which of these levers could contribute? Select all that apply.",
      "options": [
       {
        "id": "A",
-       "text": "Price levels versus competing clinics"
+       "text": "Refinancing the group's debt at a lower interest rate"
       },
       {
        "id": "B",
-       "text": "Number of dentistry graduates in Italy in the 1990s"
+       "text": "Raising prices where Dentalia charges less than nearby competitors"
       },
       {
        "id": "C",
-       "text": "New treatments that could be sold to existing patients"
+       "text": "Selling the clinic buildings and leasing them back"
       },
       {
        "id": "D",
-       "text": "Capacity and utilisation of existing clinics"
+       "text": "Raising utilisation of existing chairs"
       },
       {
        "id": "E",
-       "text": "The CEO's personal investment portfolio"
+       "text": "Selling new treatments to existing patients"
       },
       {
        "id": "F",
-       "text": "Economics of opening clinics in new locations"
+       "text": "Moving the holding company to a lower-tax country"
       },
       {
        "id": "G",
-       "text": "The brand of dental chairs used"
+       "text": "Opening clinics in new towns"
+      },
+      {
+       "id": "H",
+       "text": "Extending opening hours"
       }
      ],
      "correct": [
-      "A",
-      "C",
+      "B",
       "D",
-      "F"
+      "E",
+      "G",
+      "H"
      ],
-     "solution": "Profit growth comes from more volume in existing clinics (D), more clinics (F), more revenue per patient through new services (C) or price (A). Chair brand, historic graduate numbers and the CEO's investments do not drive clinic profit.",
-     "legacy": {
-      "D": "A",
-      "F": "B",
-      "C": "C",
-      "A": "D",
-      "G": "E",
-      "B": "F",
-      "E": "G"
-     }
+     "solution": "Operating profit is before interest and tax, so refinancing (A) and tax structuring (F) do not count, however much they help net profit. A sale-and-leaseback brings one-off cash but adds rent every year, so it lowers operating profit. The other five levers (price, utilisation, new treatments, new clinics, longer hours) all act on revenue or cost above operating profit. Five of eight are correct, so be careful not to under-select.",
+     "rev": 3
     },
     {
      "id": "q2",
@@ -1771,27 +1754,28 @@ table.ex th{color:#2a1d5c}
      "type": "single",
      "expectedMin": 2.5,
      "weight": 1,
-     "prompt": "Which assumption is most important to validate before committing to Options B and C?",
+     "prompt": "Options B and C together are expected to add about €6.4M. Which single change, on its own, would make B + C fall short of the €6M target?",
      "options": [
       {
        "id": "A",
-       "text": "Rent levels in the smaller towns considered for new clinics"
+       "text": "Aligner volume of 75 instead of 80 patients per clinic"
       },
       {
        "id": "B",
-       "text": "That evening and Saturday hours really reach 50% utilisation at the assumed dentist pay premium"
+       "text": "Extra fixed cost for extended hours of €45,000 instead of €40,000 per clinic"
       },
       {
        "id": "C",
-       "text": "Whether the one-off aligner training can be done for €14,000 instead of €15,000"
+       "text": "Aligner marketing of €30,000 instead of €20,000 per clinic"
       },
       {
        "id": "D",
-       "text": "Whether waiting rooms need redecorating"
+       "text": "Utilisation of the added hours of 45% instead of 50%"
       }
      ],
-     "correct": "B",
-     "solution": "Option B is the largest piece of the plan (€3.4M of €6.44M) and depends on two untested inputs: demand for the new hours and dentists' willingness to work them. Rents relate to Option A, which is not recommended; the training cost difference is €40k one-off; décor is immaterial."
+     "correct": "D",
+     "solution": "Headroom = 3.4 + 3.04 − 6 = €0.44M. A: 40 × 5 × €1,200 = −€0.24M. B: 40 × €5,000 = −€0.20M. C: 40 × €10,000 = −€0.40M (still meets the target, just). D: 40 × 4 × 500 h × 5% × €250 × 50% = −€0.50M, which misses. Each utilisation point on the added hours is worth €0.1M, so that is the assumption to validate first.",
+     "rev": 3
     },
     {
      "id": "q9",
@@ -1906,49 +1890,45 @@ table.ex th{color:#2a1d5c}
      "options": [
       {
        "id": "A",
-       "text": "Synergies and dis-synergies from combining the companies"
+       "text": "Halden's own share-price performance over the last year"
       },
       {
        "id": "B",
-       "text": "Norwegian housing starts in the 1990s"
+       "text": "Kolor Dom's standalone profit and market position"
       },
       {
        "id": "C",
-       "text": "Kolor Dom's standalone financial performance and market position"
+       "text": "Book value of Kolor Dom's fixed assets"
       },
       {
        "id": "D",
-       "text": "Integration risks and one-off costs"
+       "text": "Run-rate synergies, including revenue lost through distributor overlap"
       },
       {
        "id": "E",
-       "text": "The menu of Kolor Dom's staff canteen"
+       "text": "What Kolor Dom originally paid to acquire its stores"
       },
       {
        "id": "F",
-       "text": "The price expected by the sellers versus the value to Halden"
+       "text": "One-off integration costs and integration risks"
       },
       {
        "id": "G",
-       "text": "The cost of redesigning Halden's logo"
+       "text": "NOK/PLN exchange rate history since 2000"
+      },
+      {
+       "id": "H",
+       "text": "The sellers' price expectations and likely rival bidders"
       }
      ],
      "correct": [
-      "A",
-      "C",
+      "B",
       "D",
-      "F"
+      "F",
+      "H"
      ],
-     "solution": "An acquisition decision rests on the target's standalone value (C), what the combination adds or destroys (A), price versus value (F) and whether the integration can be delivered (D). The other items do not affect value.",
-     "legacy": {
-      "B": "A",
-      "F": "B",
-      "A": "C",
-      "D": "D",
-      "G": "E",
-      "C": "F",
-      "E": "G"
-     }
+     "solution": "Value to Halden = standalone value (B) + synergies net of dis-synergies (D) − integration cost (F); the bid decision then compares that value with what the sellers expect and what rivals may pay (H). Book value and past purchase prices are accounting or sunk figures, not value. Halden's share price and long FX history do not change what Kolor Dom is worth to Halden.",
+     "rev": 3
     },
     {
      "id": "q2",
@@ -2019,11 +1999,11 @@ table.ex th{color:#2a1d5c}
      "options": [
       {
        "id": "A",
-       "text": "About 40%"
+       "text": "About 28%"
       },
       {
        "id": "B",
-       "text": "About 55%"
+       "text": "About 57%"
       },
       {
        "id": "C",
@@ -2035,7 +2015,8 @@ table.ex th{color:#2a1d5c}
       }
      ],
      "correct": "C",
-     "solution": "Synergy value = 150.16 − 96 = €54.16M. Premium paid over standalone = 135 − 96 = €39M. 39 / 54.16 = 72%."
+     "solution": "Value created by the deal = max price − standalone value = 150.2 − 96 = €54.2M (net of integration cost). At €135M the sellers capture 135 − 96 = €39M → 72%. 28% is Halden's share. 57% forgets to deduct the €14M integration cost (39 / 68.2). 90% is just 135 / 150.2.",
+     "rev": 3
     },
     {
      "id": "q7",
@@ -2093,23 +2074,24 @@ table.ex th{color:#2a1d5c}
      "options": [
       {
        "id": "A",
-       "text": "Offer €156M to win the deal."
+       "text": "Match at €155M: €5M above the limit is small compared with €54M of value created."
       },
       {
        "id": "B",
-       "text": "Hold its limit at about €150M and withdraw unless new information raises the synergy estimate."
+       "text": "Hold the limit at about €150M and walk away unless new evidence raises the synergy estimate."
       },
       {
        "id": "C",
-       "text": "Offer €165M, since strategic deals justify a premium."
+       "text": "Bid €155M and cut the integration budget by €5M so the deal stays value-neutral."
       },
       {
        "id": "D",
-       "text": "Withdraw immediately, even from negotiations below €150M."
+       "text": "Raise to €160M, because the rival's bid shows Kolor Dom is worth more than Halden thought."
       }
      ],
      "correct": "B",
-     "solution": "Above €150.2M the deal destroys value under Halden's own method, so A and C overpay. D gives up a deal that still creates value below the limit, on the basis of a rumour. B keeps discipline and leaves room to revise only on evidence."
+     "solution": "€150.2M is the most Kolor Dom is worth to Halden; every euro above it destroys Halden's value regardless of how large total synergies are. The integration cost is an estimate, not a budget you can cut to fit the price. A rival may have different synergies, so its bid says nothing about the value to Halden.",
+     "rev": 3
     },
     {
      "id": "q9",
@@ -2239,52 +2221,49 @@ table.ex th{color:#2a1d5c}
      "type": "multi",
      "expectedMin": 3,
      "weight": 1.5,
-     "prompt": "Which analyses would help us identify where Kuriero's costs can be reduced? Select all that apply.",
+     "prompt": "Which analyses would help identify where Kuriero can cut €0.30 of cost per parcel? Select all that apply.",
      "options": [
       {
        "id": "A",
-       "text": "Net Promoter Score of parcel recipients"
+       "text": "Revenue per parcel by customer segment"
       },
       {
        "id": "B",
-       "text": "Kuriero's brand awareness among consumers"
+       "text": "Share of parcels that need a second delivery attempt"
       },
       {
        "id": "C",
-       "text": "Colour scheme of the delivery vans"
+       "text": "Price elasticity of business shippers"
       },
       {
        "id": "D",
-       "text": "Parcels delivered per route in urban, suburban and rural areas"
-      },
-      {
-       "id": "E",
        "text": "Cost per parcel broken down by process step"
       },
       {
+       "id": "E",
+       "text": "Competitors' list prices for next-day delivery"
+      },
+      {
        "id": "F",
-       "text": "Productivity and utilisation of the sorting centres"
+       "text": "Parcels delivered per route per day, by area type"
       },
       {
        "id": "G",
-       "text": "Prices of competitors' premium express service"
+       "text": "Throughput and utilisation of the sorting centres"
+      },
+      {
+       "id": "H",
+       "text": "Kuriero's effective tax rate"
       }
      ],
      "correct": [
+      "B",
       "D",
-      "E",
-      "F"
+      "F",
+      "G"
      ],
-     "solution": "Cost reduction starts with where the cost sits (E) and what drives it in the biggest steps: route density in delivery (D) and productivity in sorting (F). NPS, brand awareness and competitor express prices are revenue-side topics; the brief fixes prices and volumes.",
-     "legacy": {
-      "D": "A",
-      "E": "B",
-      "G": "C",
-      "B": "D",
-      "A": "E",
-      "C": "F",
-      "F": "G"
-     }
+     "solution": "The target is a cost target, so you need where cost sits (D) and the productivity drivers behind the biggest steps: route density in last mile (F), sorting utilisation (G) and failed first attempts, which make you pay for a delivery twice (B). Revenue per parcel, shipper elasticity and competitors' prices are about pricing, not cost. Tax sits below operating cost.",
+     "rev": 3
     },
     {
      "id": "q2",
@@ -2303,23 +2282,24 @@ table.ex th{color:#2a1d5c}
      "options": [
       {
        "id": "A",
-       "text": "Last mile accounts for more than half of the cost per parcel."
+       "text": "Last mile accounts for more than 45% of the cost per parcel."
       },
       {
        "id": "B",
-       "text": "Sorting and line haul together cost less than last mile."
+       "text": "Halving overhead would meet the €0.30 target on its own."
       },
       {
        "id": "C",
-       "text": "Overhead is the second-largest cost step."
+       "text": "A 15% cut in last-mile cost would meet the €0.30 target on its own."
       },
       {
        "id": "D",
-       "text": "First mile and sorting together cost more than last mile."
+       "text": "Sorting and line haul together cost less than 85% of the last-mile cost."
       }
      ],
-     "correct": "B",
-     "solution": "Last mile is 1.62 / 3.92 = 41% (A ✗). Sorting + line haul = 1.30 < 1.62 (B ✓). Line haul at 0.70 is second (C ✗). First mile + sorting = 1.10 < 1.62 (D ✗)."
+     "correct": "D",
+     "solution": "Last mile 1.62 / 3.92 = 41.3% (A wrong). Half of overhead = €0.25 (B wrong). 15% × 1.62 = €0.24 (C wrong; it would take 18.5%). Sorting + line haul = 1.30, which is 80.2% of 1.62 (D right).",
+     "rev": 3
     },
     {
      "id": "q3",
@@ -2653,49 +2633,45 @@ table.ex th{color:#2a1d5c}
      "options": [
       {
        "id": "A",
-       "text": "Dutch cheese export volumes"
+       "text": "Dutch per-capita milk consumption since 1990"
       },
       {
        "id": "B",
-       "text": "Price, variable cost and fixed costs of the new product"
+       "text": "Retailers' willingness to list a new brand, and their shelf-space terms"
       },
       {
        "id": "C",
-       "text": "Size and growth of the oat-drink segment"
+       "text": "Share of oat-drink litres that would replace Zuivelhof's own milk sales"
       },
       {
        "id": "D",
-       "text": "Milk yield per cow by breed"
+       "text": "Size and growth of the oat-drink segment"
       },
       {
        "id": "E",
-       "text": "Competing brands and retailers' willingness to list a new product"
+       "text": "Nutritional profile of soy versus almond drinks"
       },
       {
        "id": "F",
-       "text": "The energy supplier of Zuivelhof's head office"
+       "text": "Unit economics: net price, variable cost, marketing and line cost"
       },
       {
        "id": "G",
-       "text": "How much of the new volume would replace Zuivelhof's own milk sales"
+       "text": "Zuivelhof's historical dividend to its members"
+      },
+      {
+       "id": "H",
+       "text": "Market share of oat drinks in Germany"
       }
      ],
      "correct": [
       "B",
       "C",
-      "E",
-      "G"
+      "D",
+      "F"
      ],
-     "solution": "A launch decision needs the market (C), competition and access to shelves (E), the product's economics (B) and its effect on the existing business (G). Cow yields, cheese exports and the office energy supplier are unrelated to an oat drink.",
-     "legacy": {
-      "F": "A",
-      "C": "B",
-      "A": "C",
-      "E": "D",
-      "B": "E",
-      "G": "F",
-      "D": "G"
-     }
+     "solution": "Launch decision = market (D) × achievable share, which depends on getting listed (B), × unit economics (F), minus the milk profit you cannibalise (C). Long-run milk consumption, other plant drinks' nutrition and another country's market describe context, not this launch. Past dividends do not affect the decision.",
+     "rev": 3
     },
     {
      "id": "q2",
@@ -2994,49 +2970,46 @@ table.ex th{color:#2a1d5c}
      "options": [
       {
        "id": "A",
-       "text": "What customers of a closed branch are likely to do (go digital, move branch, leave)"
+       "text": "Forecast of mortgage interest rates for the next five years"
       },
       {
        "id": "B",
-       "text": "Cost per branch, by branch type"
-      },
-      {
-       "id": "C",
-       "text": "History of the European Central Bank's interest rates since 2000"
-      },
-      {
-       "id": "D",
        "text": "Customers and revenue per branch, by branch type"
       },
       {
+       "id": "C",
+       "text": "Cost per branch, by branch type"
+      },
+      {
+       "id": "D",
+       "text": "Brand perception of Egeo versus competitors"
+      },
+      {
        "id": "E",
-       "text": "Revenue and cost to serve of digital-only customers"
+       "text": "What customers of a closed branch would do: go digital, move branch or leave"
       },
       {
        "id": "F",
-       "text": "Design of the bank's credit cards"
+       "text": "Revenue and cost to serve of digital-only customers"
       },
       {
        "id": "G",
-       "text": "The number of ATMs operated by banks in other countries"
+       "text": "One-off closure and conversion costs"
+      },
+      {
+       "id": "H",
+       "text": "Head-office costs allocated to each branch"
       }
      ],
      "correct": [
-      "A",
       "B",
-      "D",
-      "E"
+      "C",
+      "E",
+      "F",
+      "G"
      ],
-     "solution": "A branch decision compares what the branch earns today (B, D) with what the same customers would earn after the change (A, E). Interest-rate history, foreign ATM counts and card design do not help choose branches.",
-     "legacy": {
-      "C": "A",
-      "B": "B",
-      "E": "C",
-      "A": "D",
-      "D": "E",
-      "G": "F",
-      "F": "G"
-     }
+     "solution": "A closure decision compares the branch's own revenue and cost (B, C) with what happens to its customers afterwards (E) and what they are worth as digital customers (F), net of the one-off cost (G). Allocated head-office cost is a trap: central costs do not fall when a branch closes, so including them makes branches look worse than they are. Rate forecasts and brand perception do not change the branch-level comparison.",
+     "rev": 3
     },
     {
      "id": "q2",
@@ -3194,23 +3167,24 @@ table.ex th{color:#2a1d5c}
      "options": [
       {
        "id": "A",
-       "text": "Rural branches are profitable on average."
+       "text": "Closing 40 first keeps this year's one-off costs lower."
       },
       {
        "id": "B",
-       "text": "The migration assumptions are untested; closing 40 first lets Egeo measure real customer behaviour before committing the rest."
+       "text": "Proposal 1 alone already exceeds the €12M target, so more closures are unnecessary."
       },
       {
        "id": "C",
-       "text": "One-off closure costs are higher than the annual cost of a rural branch."
+       "text": "The migration assumptions (60% digital, 25% move, 15% leave) are untested; a first wave lets Egeo measure real behaviour before closing the rest."
       },
       {
        "id": "D",
-       "text": "Urban branches would be overcrowded by the customers who move."
+       "text": "The other 40 rural branches are profitable, so they should stay open."
       }
      ],
-     "correct": "B",
-     "solution": "A is false (−€40k each). C is false (€150k one-off vs €400k a year). D is unsupported: moved customers go to the nearest remaining branch and add no cost. The whole gain depends on the 60/25/15 split, which is an assumption, so staging the closures is the defensible argument."
+     "correct": "C",
+     "solution": "Proposal 1 adds €10.96M, below the €12M target (B wrong). The exhibit gives averages only; nothing says the remaining branches are profitable, and the average rural branch loses €40k (D wrong). Lower one-off cost this year is true but minor. The value of closures depends on how customers react, which is untested, so a first wave tests it.",
+     "rev": 3
     },
     {
      "id": "q9",
@@ -3327,48 +3301,45 @@ table.ex th{color:#2a1d5c}
      "options": [
       {
        "id": "A",
-       "text": "Why subscribers leave (price, network quality, service)"
+       "text": "Total budget for subscriber acquisition campaigns"
       },
       {
        "id": "B",
-       "text": "The number of masts in Corrib's network"
+       "text": "Which subscribers are most likely to leave"
       },
       {
        "id": "C",
-       "text": "Operating-system share of handsets sold worldwide"
+       "text": "Value of a retained subscriber compared with the cost of each offer"
       },
       {
        "id": "D",
-       "text": "The value of a retained subscriber compared with the cost of each offer"
+       "text": "Expected churn with and without each offer, by segment"
       },
       {
        "id": "E",
-       "text": "Engagement scores of Corrib's finance department"
+       "text": "Worldwide iOS versus Android handset share"
       },
       {
        "id": "F",
-       "text": "Prices paid in the 2012 spectrum auction"
+       "text": "Why subscribers leave (price, network quality, service)"
       },
       {
        "id": "G",
-       "text": "Which subscribers are most likely to leave"
+       "text": "Churn rates of competing operators"
+      },
+      {
+       "id": "H",
+       "text": "Corrib's spectrum licence costs"
       }
      ],
      "correct": [
-      "A",
+      "B",
+      "C",
       "D",
-      "G"
+      "F"
      ],
-     "solution": "A retention programme needs to know who to target (G), what would change their mind (A) and whether keeping them is worth the cost (D). The other items do not inform an offer.",
-     "legacy": {
-      "B": "A",
-      "E": "B",
-      "G": "C",
-      "C": "D",
-      "F": "E",
-      "D": "F",
-      "A": "G"
-     }
+     "solution": "A retention programme needs to know who to target (B), why they leave so the offer addresses it (F), how much each offer changes churn (D) and whether that is worth its cost (C). The acquisition budget and competitors' churn are context, not inputs to the targeting decision. Handset OS share and spectrum costs do not change which offer creates value.",
+     "rev": 3
     },
     {
      "id": "q2",
@@ -3530,23 +3501,24 @@ table.ex th{color:#2a1d5c}
      "options": [
       {
        "id": "A",
-       "text": "Run a pilot with a control group in each segment to measure the real change in churn."
+       "text": "Pilot each offer on a random sample of each segment, with a control group, to measure the real change in churn."
       },
       {
        "id": "B",
-       "text": "Send Offer B to everyone, since it has the lowest churn."
+       "text": "Roll out Offer C to both segments, since it is the cheapest offer per subscriber."
       },
       {
        "id": "C",
-       "text": "Wait a year to see whether churn falls by itself."
+       "text": "Roll out the targeted plan now; the churn model already gives the expected effect of each offer."
       },
       {
        "id": "D",
-       "text": "Ask subscribers in a survey which offer they prefer."
+       "text": "Survey flagged subscribers on which offer would make them stay."
       }
      ],
      "correct": "A",
-     "solution": "The plan's value depends on modelled churn rates. A controlled pilot measures the true effect cheaply. Offer B destroys value; waiting costs €54M a year in replacements; stated preferences don't predict behaviour and would favour the most expensive offer."
+     "solution": "The whole plan rests on model-estimated churn with and without each offer. A randomised pilot with a control group measures the real effect before spending on 400,000 subscribers. Offer C is the best choice only for the high-risk segment (A is best for very high risk). Surveys measure stated, not actual, behaviour.",
+     "rev": 3
     },
     {
      "id": "q9",
@@ -3670,48 +3642,44 @@ table.ex th{color:#2a1d5c}
      "options": [
       {
        "id": "A",
-       "text": "Costs split into per-passenger, per-flight and fixed"
+       "text": "Average fare across Skerry Air's whole network"
       },
       {
        "id": "B",
-       "text": "Passengers and load factor by flight"
+       "text": "Costs split into per-passenger, per-flight and fixed"
       },
       {
        "id": "C",
-       "text": "The seniority list of Skerry Air's pilots"
+       "text": "Passengers and load factor by flight"
       },
       {
        "id": "D",
-       "text": "The cost of repainting the aircraft"
+       "text": "Fare and ancillary revenue per passenger on this route"
       },
       {
        "id": "E",
-       "text": "Readership of the in-flight magazine"
+       "text": "Next year's network-wide marketing budget"
       },
       {
        "id": "F",
-       "text": "Fare and ancillary revenue per passenger"
+       "text": "Resale value of the current aircraft"
       },
       {
        "id": "G",
-       "text": "Retail sales at Glasgow airport"
+       "text": "On-time performance ranking of UK airlines"
+      },
+      {
+       "id": "H",
+       "text": "Skerry Air's total debt and interest rate"
       }
      ],
      "correct": [
-      "A",
       "B",
-      "F"
+      "C",
+      "D"
      ],
-     "solution": "Route profit = passengers × (revenue − variable cost per passenger) − flights × cost per flight − fixed cost. The three relevant items (A, B, F) cover every term. The other items do not explain the loss.",
-     "legacy": {
-      "C": "A",
-      "A": "B",
-      "D": "C",
-      "E": "D",
-      "F": "E",
-      "B": "F",
-      "G": "G"
-     }
+     "solution": "Route profit = passengers × (fare + ancillaries − per-passenger cost) − flights × cost per flight − fixed cost, so you need each term for this route (B, C, D). A network-wide average fare hides this route's fare. Resale value matters for a sell decision, not for why the route loses money each year. Interest sits below operating profit, and the marketing budget and punctuality ranking do not explain the loss.",
+     "rev": 3
     },
     {
      "id": "q2",
@@ -3852,27 +3820,28 @@ table.ex th{color:#2a1d5c}
      "type": "single",
      "expectedMin": 2,
      "weight": 1,
-     "prompt": "Which assumption should be tested first before cutting frequency?",
+     "prompt": "Option 2 assumes that 80% of passengers on cancelled flights rebook. Below roughly what rebooking rate would Option 3 (smaller aircraft) become more profitable than Option 2?",
      "options": [
       {
        "id": "A",
-       "text": "That 80% of passengers on cancelled flights would really rebook onto the remaining flights"
+       "text": "About 50%"
       },
       {
        "id": "B",
-       "text": "That the 48-seat aircraft has enough range for the route"
+       "text": "About 60%"
       },
       {
        "id": "C",
-       "text": "That fuel prices stay constant for ten years"
+       "text": "About 70%"
       },
       {
        "id": "D",
-       "text": "That ancillary revenue could rise to £11 per passenger"
+       "text": "About 75%"
       }
      ],
-     "correct": "A",
-     "solution": "Option 2's result depends directly on the rebooking rate: every 5 points fewer rebookings loses about 796 passengers × £85 ≈ £68k. B concerns Option 3; C affects all options alike; D is a minor upside."
+     "correct": "C",
+     "solution": "Option 2 profit = £85 × passengers − 1,050 × £3,200 − £1.2M = 85 × pax − £4.56M. To match Option 3 (£455.2k), passengers = 4,560 + 455.2 = £5,015.2k / 85 = 59,002. Passengers kept without rebooking = 75% × 63,700 = 47,775; on cancelled flights = 15,925. Rebooking needed = (59,002 − 47,775) / 15,925 = 70.5%.",
+     "rev": 3
     },
     {
      "id": "q9",
@@ -4004,43 +3973,44 @@ table.ex th{color:#2a1d5c}
      "options": [
       {
        "id": "A",
-       "text": "Number of golf courses in southern Spain"
+       "text": "Forecast growth of golf tourism in the Algarve to 2035"
       },
       {
        "id": "B",
-       "text": "Contracts with the supplier of staff uniforms"
-      },
-      {
-       "id": "C",
        "text": "Occupancy and average room rate by hotel and by season"
       },
       {
+       "id": "C",
+       "text": "Market value of the four hotel properties"
+      },
+      {
        "id": "D",
-       "text": "History of Portuguese tourism since 1980"
+       "text": "Booking-channel mix and the cost of each channel"
       },
       {
        "id": "E",
-       "text": "Booking channel mix and the cost of each channel"
+       "text": "Fixed and variable costs per hotel"
       },
       {
        "id": "F",
-       "text": "Architect's fees for the original hotel buildings"
+       "text": "Guest review scores on online travel agencies"
       },
       {
        "id": "G",
-       "text": "Variable and fixed costs per hotel"
+       "text": "Interest cost of the group's mortgage loans"
       },
       {
        "id": "H",
-       "text": "Ratings of competitors' hotel restaurants"
+       "text": "Restaurant revenue of competing hotels"
       }
      ],
      "correct": [
-      "C",
-      "E",
-      "G"
+      "B",
+      "D",
+      "E"
      ],
-     "solution": "Hotel profit = room-nights sold × (rate − booking cost − variable cost) − fixed costs. Occupancy and rate (C), channel costs (E) and the cost base (G) cover every term. Golf courses, uniform contracts, 40-year tourism history, construction fees and competitors' restaurants do not explain this year's profit."
+     "solution": "Operating profit = room revenue − booking costs − variable costs − fixed costs, so you need occupancy and rate by hotel and season (B), channel mix and cost (D) and the cost base (E). Property value is a balance-sheet figure and mortgage interest sits below operating profit. Review scores and golf forecasts may explain future demand, but not why last year's profit was so low.",
+     "rev": 3
     },
     {
      "id": "q2",
@@ -4299,15 +4269,15 @@ table.ex th{color:#2a1d5c}
      "options": [
       {
        "id": "A",
-       "text": "The colour scheme of Velora's bikes"
+       "text": "Velora's profit in Zurich last year"
       },
       {
        "id": "B",
-       "text": "Expected rides per bike and revenue per ride in Lyon"
+       "text": "Expected rides per bike per day and revenue per ride in Lyon"
       },
       {
        "id": "C",
-       "text": "Number of bike lanes in Zurich"
+       "text": "How the tender is scored (fee only, or fee plus service quality)"
       },
       {
        "id": "D",
@@ -4315,23 +4285,29 @@ table.ex th{color:#2a1d5c}
       },
       {
        "id": "E",
-       "text": "Lyon's weather records from the 1990s"
+       "text": "Likely bids of rival operators"
       },
       {
        "id": "F",
-       "text": "The CEO's preferred bike model"
+       "text": "Lyon public-transport fare levels"
       },
       {
        "id": "G",
-       "text": "How the tender is decided and what rivals are likely to bid"
+       "text": "Velora's cost of preparing the bid"
+      },
+      {
+       "id": "H",
+       "text": "Tourist arrivals in Lyon in 2010"
       }
      ],
      "correct": [
       "B",
+      "C",
       "D",
-      "G"
+      "E"
      ],
-     "solution": "A bid decision needs the profit the licence can generate (B: revenue drivers; D: costs) and the chance of winning at each price (G). Bike colours, Zurich's lanes, 30-year-old weather records and the CEO's preferences do not change the value of the licence."
+     "solution": "The bid is the highest fee that still leaves a profit (B, D), weighed against the chance of winning, which depends on how the tender is scored (C) and what rivals bid (E). Zurich profit does not transfer. Public-transport fares and tourist numbers are already reflected in the Lyon ride estimate. The cost of preparing the bid is spent whatever you bid, so it does not change the bid amount.",
+     "rev": 3
     },
     {
      "id": "q2",
@@ -4625,39 +4601,40 @@ table.ex th{color:#2a1d5c}
      "options": [
       {
        "id": "A",
-       "text": "Pulso's brand colours and logo"
+       "text": "Average gym membership fees in Spain"
       },
       {
        "id": "B",
-       "text": "The ticket prices of Porto's football stadium"
+       "text": "Size of the budget-gym segment in Porto"
       },
       {
        "id": "C",
-       "text": "Size of the budget-gym market in Porto"
+       "text": "Pulso's corporate tax rate"
       },
       {
        "id": "D",
-       "text": "Economics of a Pulso club: fees, costs and investment"
+       "text": "Club economics: fees, costs, ramp-up and investment"
       },
       {
        "id": "E",
-       "text": "Average gym fees in Brazil"
-      },
-      {
-       "id": "F",
        "text": "Competing gyms and available sites in Porto"
       },
       {
+       "id": "F",
+       "text": "Membership growth of premium gyms in Lisbon"
+      },
+      {
        "id": "G",
-       "text": "The CEO's favourite sport"
+       "text": "Porto's population growth since 1970"
       }
      ],
      "correct": [
-      "C",
+      "B",
       "D",
-      "F"
+      "E"
      ],
-     "solution": "The decision rests on how many members Porto can supply (C), what each club earns and costs (D), and how much of the market Pulso can realistically win given rivals and sites (F). Branding, stadium prices, Brazilian fees and the CEO's tastes do not change the answer."
+     "solution": "How many clubs to open depends on the size of the prize (B), how many members Pulso can win against competitors and where it can find sites (E), and whether each club pays back (D). Tax does not change EBITDA or the club count. Spanish fees, Lisbon premium gyms and long-run population history are the wrong market, segment or period.",
+     "rev": 3
     },
     {
      "id": "q2",
@@ -4993,39 +4970,45 @@ table.ex th{color:#2a1d5c}
      "options": [
       {
        "id": "A",
-       "text": "The architecture of Kestrel's head office"
+       "text": "Kestrel's group share price"
       },
       {
        "id": "B",
-       "text": "The full cost of producing in Cork today"
+       "text": "Which Cork costs would disappear if the line closed, and which would remain"
       },
       {
        "id": "C",
-       "text": "The colour of the tablet"
+       "text": "What Kestrel originally paid for the Cork equipment"
       },
       {
        "id": "D",
-       "text": "Kestrel's sponsorship of a local rugby team"
+       "text": "Contract manufacturers' prices, oversight costs and delivery reliability"
       },
       {
        "id": "E",
-       "text": "Contract manufacturers' prices and reliability"
+       "text": "One-off closure costs and equipment resale proceeds"
       },
       {
        "id": "F",
-       "text": "The one-off costs and proceeds of closing the line"
+       "text": "Forecast volume of the tablet"
       },
       {
        "id": "G",
-       "text": "Tablet sales in South Korea"
+       "text": "Head-office costs allocated to the Cork plant"
+      },
+      {
+       "id": "H",
+       "text": "Kestrel's sales of its other products"
       }
      ],
      "correct": [
       "B",
+      "D",
       "E",
       "F"
      ],
-     "solution": "Compare the cost of making (B) against the cost of buying, including supplier price and reliability (E), and include the one-off cost of switching (F). The office, tablet colour, sponsorships and Korean sales do not affect the decision."
+     "solution": "Make vs buy compares avoidable in-house cost (B) with the full cost of buying (D), over the volumes you expect (F), plus one-off items (E). The original equipment price is sunk: only its resale value counts. Allocated head-office costs stay whether Kestrel makes or buys, so they must be left out. Share price and other products are irrelevant to this line.",
+     "rev": 3
     },
     {
      "id": "q2",
@@ -5261,6 +5244,7 @@ table.ex th{color:#2a1d5c}
       <div class="timeleft" id="timeleft"><span>Time Left </span><b id="clock">35:00</b></div>
       <button class="pillbtn" id="end-btn">Submit</button>
     </div>
+    <div class="qdots" id="qdots" aria-label="Questions"></div>
     <div class="panel">
       <div class="chat" id="chat"><div class="chat-in" id="chat-in"></div></div>
       <div class="composer" id="composer" hidden>
@@ -5278,6 +5262,7 @@ table.ex th{color:#2a1d5c}
     <div class="timeleft"><span>Time Left </span><b id="vclock">00:00</b></div>
     <button class="pillbtn" id="vend">End Test</button>
   </div>
+  <div class="qdots" id="vqdots" aria-label="Questions"></div>
   <div class="vpanel" id="vpanel"></div>
 </div>
 
@@ -5476,7 +5461,7 @@ function preStart(id){
   const c = caseById(id); pendingCase = id; attempt = null;
   $('chat-in').innerHTML = botMsg('<p>' + esc(c.intro[0]) + '</p>') + tsHTML(Date.now());
   $('thumbs').innerHTML = ''; $('ex-count').textContent = '0'; $('composer').hidden = true;
-  $('prog-fill').style.width = '0%'; $('prog-label').textContent = 'Test Completed 0%';
+  $('prog-fill').style.width = '0%'; $('prog-label').textContent = 'Test Completed 0%'; $('qdots').innerHTML = '';
   $('clock').textContent = fmtClock(c.timeLimitMin * 60); $('timeleft').classList.remove('crit');
   paintCam(); show('run');
   const m = modal(guideHTML(), {noClose: true});
@@ -5486,7 +5471,7 @@ function preStart(id){
 }
 function startAttempt(id){
   const now = Date.now();
-  attempt = { uid: 'a' + now.toString(36) + Math.random().toString(36).slice(2,6), caseId: id, startedAt: now, qIndex: 0, answers: {}, checks: {}, status: 'running', optv: 2, timeUsedSec: 0, shown: {0: now}, answered: {}, flags: {tab: 0, paste: 0}, warned: {} };
+  attempt = { uid: 'a' + now.toString(36) + Math.random().toString(36).slice(2,6), caseId: id, startedAt: now, qIndex: 0, answers: {}, checks: {}, status: 'running', optv: 3, timeUsedSec: 0, shown: {0: now}, answered: {}, flags: {tab: 0, paste: 0}, warned: {} };
   store.set(AKEY, attempt); pendingCase = null;
   resumeAttempt();
 }
@@ -5513,6 +5498,17 @@ function updateProgress(){
   const done = c.questions.slice(0, attempt.qIndex).reduce((s,q) => s + q.expectedMin, 0);
   const pct = Math.round(done / total * 100);
   $('prog-fill').style.width = pct + '%'; $('prog-label').textContent = 'Progress ' + pct + '%';
+  renderDots('qdots', attempt.qIndex);
+}
+function renderDots(elId, cur){
+  const c = caseById(attempt.caseId); const n = c.questions.length + 1; let h = '';
+  for (let i = 0; i < n; i++) {
+    const st = i < cur ? 'done' : i === cur ? 'cur' : '';
+    const label = i === n - 1 ? 'Video question' : 'Question ' + (i + 1);
+    h += '<span class="qdot ' + st + '" title="' + label + (st === 'done' ? ' · completed' : st === 'cur' ? ' · current' : '') + '">' + (st === 'done' ? '&#10003;' : (i + 1)) + '</span>';
+    if (i < n - 1) h += '<span class="qline' + (i < cur ? ' done' : '') + '" aria-hidden="true"></span>';
+  }
+  const el = $(elId); if (el) el.innerHTML = h;
 }
 const botMsg = (html) => '<div class="msg"><span class="bot-ico" aria-hidden="true"><i></i></span><div class="bubble">' + html + '</div></div>';
 const tsHTML = (ms, right) => '<div class="ts' + (right ? ' right' : '') + '">' + fmtTs(ms) + '</div>';
@@ -5659,6 +5655,7 @@ function startVideo(){
     '<div class="vcount" id="vcount"></div><div class="vcam" id="vcam"></div><div class="vinfo" id="vfoot">Please get ready to record your answer!</div>' +
     '<button class="link" id="vhome" style="background:none;border:0;color:#cfd2da;font-size:11px;text-decoration:underline">Back to menu (practice only)</button>';
   $('vhome').onclick = goHome;
+  renderDots('vqdots', c.questions.length);
   paintCam(); show('video');
   clearInterval(vtick); vtick = setInterval(videoClock, 250); videoClock();
 }
